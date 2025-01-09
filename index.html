@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <title>Typing Test</title>
+</head>
+<body>
+    <header>
+        <h1>Speed Typing Test</h1>
+    </header>
+    <main>
+        <section id="main-container">
+            <div id="paragraph-box" onclick="focus_now()"></div>
+            <input type="text" id="input-field" oninput='check()'>
+            <div id="input-box">
+            </div>
+        </section>
+        <button id="start-bttn" onclick="again()">START</button>
+        <section id="stats-container">
+            <div id="accuracy">Accuracy
+                <div id="acc_container"></div>
+            </div>
+            <div id="time">Time<span id="small-sec">(sec)</span>
+                <div id="timer_container"></div>
+            </div>
+            <div id="wpm">WPM
+                <div id="wpm_container"></div>
+            </div>
+        </section>
+    </main>
+    
+    <script src="app.js"></script>
+</body>
+      
+</html>
