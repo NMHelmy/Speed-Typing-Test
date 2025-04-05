@@ -15,22 +15,24 @@
     </header>
     <main>
         <section id="main-container">
-            <div id="paragraph-box" onclick="focus_now()"></div>
-            <input type="text" id="input-field" oninput='check()'>
+            <div id="paragraph-box" onclick="focusNow()" aria-label="Typing test area">
+                <p>Press start to start typing....</p>
+            </div>
+            <input type="text" id="input-field" oninput='checkInput()' aria-label="Type here">
             <div id="input-box">
             </div>
         </section>
-        <button id="start-bttn" onclick="again()">START</button>
-        <section id="stats-container">
-            <div id="accuracy">Accuracy
+        <button id="start-bttn" aria-label="Start or reset typing test">START</button>
+        <section id="stats-container" aria-label="Typing statistics">
+            <article id="accuracy">Accuracy
                 <div id="acc_container"></div>
-            </div>
-            <div id="time">Time<span id="small-sec">(sec)</span>
+            </article>
+            <article id="time">Time<span id="small-sec">(sec)</span>
                 <div id="timer_container"></div>
-            </div>
-            <div id="wpm">WPM
+            </article>
+            <article id="wpm">WPM
                 <div id="wpm_container"></div>
-            </div>
+            </article>
         </section>
     </main>
     

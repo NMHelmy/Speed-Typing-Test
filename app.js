@@ -1,223 +1,161 @@
-const bttn = document.querySelector('#test-click')
-const inputArea = document.querySelector('#input-field')
-const paragraphBox = document.querySelector("#paragraph-box")
-const startBttn = document.querySelector('#start-bttn')
-const wpm_container = document.querySelector('#wpm_con')
-const time_container = document.querySelector('#time_con')
-const accuracy_container = document.querySelector('#acc_con')
+let timer;                  // Stores the timer interval
+let isRunning = false;      // Flag to track if test is running
+let startTime;              // When test started
+let endTime;                // When test ended
+let correctCharacters = 0;  // Count of correctly typed chars
+let totalCharacters = 0;    // Total chars typed
+let currentParagraph = "";  // Current paragraph being typed
+let currentPosition = 0;    // Current cursor position
 
-let index_no = 0
-let mainArray = []
-let spanArray = []
-let modArray = []
-let typedChar
-let r_time = 0
-let curr_input = ''
-let middle_char = 30
-let scroll_amnt = 10
-let curr_input_array = []
-let latest_arr_count = 0
+// DOM elements
+const paragraphBox = document.getElementById('paragraph-box');
+const inputField = document.getElementById('input-field');
+const startButton = document.getElementById('start-bttn');
+const accContainer = document.getElementById('acc_container');
+const timerContainer = document.getElementById('timer_container');
+const wpmContainer = document.getElementById('wpm_container');
 
-let char_typedCount = 0
-let char_typedWrong = 0
-let char_typedCorrect = 0
+// An array of sample text for the typing test.
+const sampleParagraphs = [
+  "The quick brown fox jumps over the lazy dog. This sentence contains all the letters in the English alphabet.",
+  "Programming is the art of telling another human what one wants the computer to do. Good code is its own best documentation.",
+  "The only way to learn a new programming language is by writing programs in it. The more you code, the better you become.",
+  "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
+  "Simplicity is the soul of efficiency. Make it work, make it right, make it fast, in that order."
+];
 
-let timer
-let count = 0
-let array_count = 0
+function startTest() {
+  if (isRunning) return;
+  
+  // Reset state for a new test
+  isRunning = true;
+  correctCharacters = 0;
+  totalCharacters = 0;
+  currentPosition = 0;
+  
+  // Select random paragraph
+  currentParagraph = sampleParagraphs[Math.floor(Math.random() * sampleParagraphs.length)];
+  paragraphBox.innerHTML = currentParagraph.split('').map(char => 
+      `<span class="original">${char}</span>`
+  ).join('');
+  
+  // Reset stats
+  accContainer.textContent = '0%';
+  timerContainer.textContent = '0';
+  wpmContainer.textContent = '0';
+  
+  // Focus input field - making it active and ready to receive keyboard input
+  inputField.value = '';
+  inputField.focus();
+  
+  // Start timer
+  startTime = new Date();
+  timer = setInterval(updateTimer, 1000);
+  
+  // Update button
+  startButton.textContent = 'RESET';
+}
 
-let typedChar_arr = []
-let charCheckWrong = false
+function updateTimer() {
+  const currentTime = new Date();
+  const elapsedSeconds = Math.floor((currentTime - startTime) / 1000);
+  timerContainer.textContent = elapsedSeconds;
+}
 
+function checkInput() {
+  if (!isRunning) return;
+  
+  const inputText = inputField.value;
+  const inputLength = inputText.length;
+  
+  // Reset all spans to original state
+  const spans = paragraphBox.querySelectorAll('span');
+  spans.forEach(span => {
+      span.className = 'original';
+  });
+  
+  // Update current position
+  currentPosition = inputLength;
+  
+  // Check each character
+  let correctCount = 0;
+  for (let i = 0; i < inputLength; i++) {
+      if (i >= currentParagraph.length) break;
+      
+      if (inputText[i] === currentParagraph[i]) {
+          spans[i].className = 'correct';
+          correctCount++;
+      } else {
+          spans[i].className = 'wrong';
+      }
+  }
+  
+  // Highlight current position
+  if (currentPosition < spans.length) {
+      spans[currentPosition].classList.add('cursor-highlight');
+  }
+  
+  // Update stats
+  totalCharacters = inputLength;
+  correctCharacters = correctCount;
+  updateStats();
+  
+  // Check if test is complete
+  if (inputLength === currentParagraph.length) {
+      endTest();
+  }
+}
 
-const words = [
-  "JavaScript is the only language that I'm aware of that people feel they don't need to learn before they start using it.",
-  "Be humble, communicate clearly, and respect others. It costs nothing to be kind, but the impact is priceless.",
-  "If people do not believe that mathematics is simple, it is only because they do not realize how complicated life is.",
-  "I make mistakes because I'm always operating at my limit. If I only stay in comfortable territory all the time, that's not so much fun.",
-  "If you learn how to solve problems, you can go through life and do pretty well.",
-  "To be successful, you want to surround yourself with very talented folks whose skills blend very well. That's the secret of success.",
-  "Good judgement comes from experience. Experience comes from bad judgement."
-]
+function updateStats() {
+  // Calculate accuracy
+  const accuracy = totalCharacters > 0 
+      ? Math.round((correctCharacters / totalCharacters) * 100) 
+      : 0;
+  accContainer.textContent = `${accuracy}%`;
+  
+  // Calculate WPM (assuming 5 characters = 1 word)
+  const currentTime = new Date();
+  const elapsedMinutes = (currentTime - startTime) / 60000;
+  const wpm = elapsedMinutes > 0 
+      ? Math.round((correctCharacters / 5) / elapsedMinutes)
+      : 0;
+  wpmContainer.textContent = wpm;
+}
+
+function endTest() {
+  clearInterval(timer);
+  isRunning = false;
+  endTime = new Date();
+  inputField.blur();
+}
+
+function resetTest() {
+  clearInterval(timer);
+  isRunning = false;
+  paragraphBox.innerHTML = '<p>Press start to start typing....</p>';
+  inputField.value = '';
+  accContainer.textContent = '';
+  timerContainer.textContent = '';
+  wpmContainer.textContent = '';
+  startButton.textContent = 'START';
+}
+
+function focusNow() {
+  if (isRunning) {
+      inputField.focus();
+  }
+}
 
 function again() {
-  resetVal()
-  inputArea.focus()
-  startBttn.innerHTML = 'Again'
-  init()
-  check()
-  time_counter()
-}
-
-function resetVal() {
-  paragraphBox.scrollLeft = 0;
-  clearInterval(timer)
-  inputArea.value = ''
-  latest_arr_count = 0;
-  time_container.innerText = '0'
-  wpm_container.innerText = ''
-  accuracy_container.innerText = ''
-  char_typedWrong = 0
-  count = 0
-  charCheckWrong = false
-  array_count = 0
-  typedChar_arr = []
-
-}
-
-function focus_now() {
-  inputArea.focus()
-}
-
-function start() {
-  startBttn.innerHTML = 'Start'
-  inputArea.value = ''
-  resetVal()
-  paragraphBox.innerHTML = "Press Start button to begin......"
-}
-
-function randomWords() {
-  return Math.floor(Math.random() * words.length)
-}
-
-function init() {
-  paragraphBox.innerHTML = ''
-  words[randomWords()].split('').forEach(ch => {
-    const span_char = document.createElement('span')
-    span_char.innerText = ch
-    paragraphBox.appendChild(span_char)
-    // array_count += 1
-  })
-}
-
-function changeSpace(s) {
-  if (s == ' ') {
-    s = '&nbsp;'
+  if (isRunning) {
+      resetTest();
+  } else {
+      startTest();
   }
-  return s
 }
 
-function create_Array() {
-  curr_input = inputArea.value
-  curr_input_array = curr_input.split('').map(changeSpace)
-
-  spanArray = paragraphBox.querySelectorAll('span')
-  spanArray.forEach(e => {
-    if (e.innerHTML == ' ') {
-      e.innerHTML = '&nbsp;'
-    }
-  })
-}
-
-let index_char = -1
-function check() {
-  create_Array()
-
-  let s = []
-  spanArray.forEach(e => {
-    s.push(e.innerHTML)
-  })
-
-  spanArray[0].classList.add('cursor-highlight')
-
-  spanArray.forEach((char, index) => {
-    typedChar = curr_input_array[index]
-
-    // Cheking if latest char is the same with the text
-    if (typedChar == null) {                     //If the test have not yet started
-      char.classList.remove('wrong')
-      char.classList.remove('correct')
-    } else if (typedChar == char.innerHTML) {    //If the char typed match 
-      char.classList.remove('wrong')
-      char.classList.add('correct')
-      charCheckWrong = false
-      // typedChar_arr[index_char] = 1
-    } else if (typedChar != char.innerHTML) {                                     //If the char do not match
-      char.classList.remove('correct')
-      char.classList.add('wrong')
-      charCheckWrong = true
-      // typedChar_arr[index_char] = 0
-    }
-
-    // Highlighting the wrong and cursor-highlight
-    if (index == curr_input_array.length) {
-      if (char === ' ') char.classList.add('space-wrong')
-      char.classList.add('cursor-highlight')
-    } else char.classList.remove('cursor-highlight')
-
-    if (curr_input_array.length == spanArray.length) {
-      // TODO display the Stats 
-      clearInterval(timer)
-      char_typedWrong = determine_wrong_counts()
-
-      console.log(char_typedWrong, "= wrong counts")
-      calculate_wpm()
-      calculate_acc()
-      // startBttn.classList.remove('hidden')
-      startBttn.focus()
-    }
-  })
-
-  typedChar_arr.push(charCheckWrong)
-}
-
-
-function calculate_acc() {
-  let acc = Math.round(((spanArray.length - char_typedWrong) / (spanArray.length)) * 100)
-  accuracy_container.innerText = acc + '%'
-}
-
-function time_counter() {
-  timer = setInterval(() => {
-    count++
-    time_container.innerText = count
-  }, 1002)
-}
-
-function calculate_wpm() {
-  let wpm_score = Math.round(((spanArray.length) / 5) / (count / 60))
-  wpm_container.innerText = wpm_score
-}
-
-function determine_wrong_counts() {
-  let typedWrong = 0
-  for (let i = 0; i < typedChar_arr.length; i++) {
-    if (typedChar_arr[i] == true) {
-      typedWrong += 1
-    }
-  }
-  return typedWrong
-}
-
-function ignored_Key(e_key) {
-  const ignore_keys = {
-    'Shift': 0,
-    'Alt': 0,
-    'Control': 0,
-  }
-  return ignore_keys[e_key] ?? -1
-}
-
-let scroll_actual_val = 0
-inputArea.addEventListener('keydown', (e) => {
-  let name = e.key
-  if (name == 'Backspace') {
-    if (curr_input_array.length > spanArray.length * 0.90) {
-      paragraphBox.scrollLeft -= 0
-    } else {
-      paragraphBox.scrollLeft -= spanArray.length / 10
-    }
-  }
-  else if (ignored_Key(name) == 0) paragraphBox.scrollLeft += 0
-  else {
-    // scroll_left_val += spanArray.length / 10
-    paragraphBox.scrollLeft += spanArray.length / 10
-    scroll_actual_val += spanArray.length / 10
-  }
-
-}, false)
-
-
-
-start()
+// Initialize
+inputField.addEventListener('input', checkInput);
+paragraphBox.addEventListener('click', focusNow);
+startButton.addEventListener('click', again);
 

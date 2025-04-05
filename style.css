@@ -1,20 +1,19 @@
 body {
-    background-color: rgb(57, 54, 70);
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: #f5f5f5; /* text color */
     text-align: center;
     font-size: x-large;
 }
 
-
 #main-container {
-    background-color: rgb(79, 69, 87);
+    background-color: #2f2f55;
     min-height: 100px;
     min-width: 50vw;
     max-height: 60vh;
     height: fit-content;
     width: 80vw;
-
     padding: 5px;
-    align-self:center;
+    align-self: center;
     border-radius: 0.7rem;
     position: relative;
     margin: auto;
@@ -25,7 +24,7 @@ body {
 } 
 
 #paragraph-box {
-    background-color: rgb(109, 93, 110);
+    background-color: #2f2f55;
     color: rgba(244, 238, 224, 0.5);
     margin: 2.5px;
     min-height: 4rem;
@@ -36,9 +35,8 @@ body {
     line-height: 2rem;
     min-width: 2rem;
     width: fill;
-    font-family: 'JetBrains Mono', monospace; 
-    overflow-y: scroll;
-    scroll-behavior: smooth;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: text;
 }
 
 #input-box {
@@ -46,33 +44,41 @@ body {
 }
 
 #input-field {
-    font-family: 'Courier New', Courier, monospace;
-    color: rgb(79, 69, 87);
+    font-family: 'JetBrains Mono', monospace;
+    color: rgb(133, 123, 141);
     background: none;   
     outline: none;
     border: none;
-    height: 0;
+    height: 2rem;
     width: 100%;
+    font-size: 1rem;
 }
 
-#start-bttn{
+#start-bttn {
     width: 100px;
     height: 50px; 
     color: rgba(244, 238, 224);
     position: relative;
     margin: 10px; 
     border: none;
-    background-color: rgb(79, 69, 87);
+    background-color: rgb(17, 2, 42);
     border-radius: 10px;
-    box-shadow:0 1px 1px rgba(244, 238, 224, 0.4);
     font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(32, 1, 61, 0.6);
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+#start-bttn:hover {
+    background-color: rgb(35, 10, 70);
+    transform: scale(1.05);
 }
 
 #stats-container {
     width: fit-content;
     height: 200px;
     display: grid;
-    grid-template-columns:repeat(3, 1fr); 
+    grid-template-columns: repeat(3, 1fr); 
     grid-template-rows: 200px;
     column-gap: 30px;
     text-align: center;
@@ -80,30 +86,35 @@ body {
     justify-items: center;
     margin: auto;
     margin-top: 20px;
-    background-color: rgb(79, 69, 87);
-    padding-left: 10px;
-    padding-right: 10px;
-    border-radius: 10px;
+    background-color: rgb(17, 2, 42);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 20px;
 }
 
 #accuracy, #time, #wpm {
-    background-color: rgb(109, 93, 110);
+    background-color: rgb(25, 15, 72);
     width: 100%; 
     margin: 10px;
     border-radius: 5px;
     color: rgb(244, 238, 224);
     padding: 5px;
-    font-family: JetBrains Mono;
+    font-family: 'JetBrains Mono', monospace;
     font-weight: bold;
+    
 }
 
-#wpm_con, #time_con {
+#wpm-container, #timer-container {
     height: 85%;
     padding: 20px; 
     font-size: 5rem; 
+    width: 100%;
+    text-align: center;  /* Centers the number horizontally */
 }
 
-#acc_con {
+#accuracy-container {
     height: 85%;
     padding: 20px;
     font-size: 5rem;
@@ -113,31 +124,48 @@ body {
     font-size: 0.7rem;
 }
 
-.wrong {
-    background-color: Red;
+.original {
+    color: rgba(244, 238, 224, 0.5);
 }
 
 .correct {
     color: rgb(244, 238, 224);
+    background-color: rgba(76, 175, 80, 0.3);
 }
 
-.background-fix {
-    background-color: rgb(109, 93, 110);
+.wrong {
+    color: rgb(244, 238, 224);
+    background-color: rgba(244, 67, 54, 0.7);
+    text-decoration: underline;
 }
 
 .cursor-highlight {
-    background-color: rgba(57, 54, 70, 0.4);
+    background-color: rgba(57, 54, 70, 0.8);
+    border-left: 2px solid white;
+    animation: blink 1s step-end infinite;
 }
 
-.space-wrong{
-    background-color: Red;
+@keyframes blink {
+    from, to { border-left-color: transparent; }
+    50% { border-left-color: white; }
 }
 
-.hidden {
-    visibility: hidden;
+/* Accessibility improvements */
+[aria-label] {
+    position: relative;
 }
 
-.broken {
-    background-color: red;
-    color: green;
+[aria-label]:hover::after {
+    content: attr(aria-label);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+    z-index: 100;
 }
